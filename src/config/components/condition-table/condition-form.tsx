@@ -1,7 +1,7 @@
 import React, { VFC, VFCX } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { produce } from 'immer';
 import styled from '@emotion/styled';
-import { Properties } from '@kintone/rest-api-client/lib/client/types';
 import { CircularProgress, IconButton, Tooltip } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import AddIcon from '@material-ui/icons/Add';
@@ -15,7 +15,6 @@ import SingleLineSelect from './single-line-fields-input';
 type ContainerProps = { condition: kintone.plugin.Condition; index: number };
 
 type Props = ContainerProps & {
-  fields: Properties | null;
   onTargetChange: (value: string) => void;
   onRelatedChange: (value: string) => void;
   onCopyFromChange: (rowIndex: number, value: string) => void;
@@ -30,7 +29,6 @@ type Props = ContainerProps & {
 const Component: VFCX<Props> = ({
   className,
   condition,
-  fields,
   onTargetChange,
   onRelatedChange,
   onCopyFromChange,
@@ -41,91 +39,86 @@ const Component: VFCX<Props> = ({
   addSees,
   removeSees,
 }) => (
-  <>
-    {!fields && <CircularProgress />}
-    {!!fields && (
-      <div {...{ className }}>
-        <div>
-          <h3 style={{ marginTop: '0' }}>ルックアップボタンを設置するフィールド</h3>
-          <div>
-            <SingleLineSelect
-              label='対象フィールド'
-              value={condition.target}
-              onChange={(e) => onTargetChange(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div>
-          <h3>関連付けるフィールド(ボタンを設置したフィールドに反映するフィールド)</h3>
-          <div>
-            <SingleLineSelect
-              label='対象フィールド'
-              value={condition.related}
-              onChange={(e) => onRelatedChange(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div>
-          <h3>他のフィールドのコピー</h3>
-
-          {condition.copies.map(({ from, to }, i) => (
-            <div key={i} className='row'>
-              <AppFieldsInput
-                label='コピー元'
-                value={from}
-                onChange={(e) => onCopyFromChange(i, e.target.value)}
-              />
-              <ArrowForwardIcon />
-              <AppFieldsInput
-                label='コピー先'
-                value={to}
-                onChange={(e) => onCopyToChange(i, e.target.value)}
-              />
-              <Tooltip title='コピー設定を追加する'>
-                <IconButton size='small' onClick={() => addCopies(i)}>
-                  <AddIcon fontSize='small' />
-                </IconButton>
-              </Tooltip>
-              {condition.copies.length > 1 && (
-                <Tooltip title='このコピー設定を削除する'>
-                  <IconButton size='small' onClick={() => removeCopies(i)}>
-                    <DeleteIcon fontSize='small' />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </div>
-          ))}
-        </div>
-        <div>
-          <h3>コピー元のレコードの選択時に表示するフィールド</h3>
-          {condition.sees.map((field, i) => (
-            <div key={i} className='row'>
-              <AppFieldsInput
-                label='表示するフィールド'
-                value={field}
-                onChange={(e) => onDisplayFieldChange(i, e.target.value)}
-              />
-
-              <Tooltip title='表示フィールドを追加する'>
-                <IconButton size='small' onClick={() => addSees(i)}>
-                  <AddIcon fontSize='small' />
-                </IconButton>
-              </Tooltip>
-              {condition.sees.length > 1 && (
-                <Tooltip title='この表示フィールドを削除する'>
-                  <IconButton size='small' onClick={() => removeSees(i)}>
-                    <DeleteIcon fontSize='small' />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </div>
-          ))}
-        </div>
+  <div {...{ className }}>
+    <div>
+      <h3 style={{ marginTop: '0' }}>ルックアップボタンを設置するフィールド</h3>
+      <div>
+        <SingleLineSelect
+          label='対象フィールド'
+          value={condition.target}
+          onChange={(e) => onTargetChange(e.target.value)}
+        />
       </div>
-    )}
-  </>
+    </div>
+
+    <div>
+      <h3>関連付けるフィールド(ボタンを設置したフィールドに反映するフィールド)</h3>
+      <div>
+        <SingleLineSelect
+          label='対象フィールド'
+          value={condition.related}
+          onChange={(e) => onRelatedChange(e.target.value)}
+        />
+      </div>
+    </div>
+
+    <div>
+      <h3>他のフィールドのコピー</h3>
+
+      {condition.copies.map(({ from, to }, i) => (
+        <div key={i} className='row'>
+          <AppFieldsInput
+            label='コピー元'
+            value={from}
+            onChange={(e) => onCopyFromChange(i, e.target.value)}
+          />
+          <ArrowForwardIcon />
+          <AppFieldsInput
+            label='コピー先'
+            value={to}
+            onChange={(e) => onCopyToChange(i, e.target.value)}
+          />
+          <Tooltip title='コピー設定を追加する'>
+            <IconButton size='small' onClick={() => addCopies(i)}>
+              <AddIcon fontSize='small' />
+            </IconButton>
+          </Tooltip>
+          {condition.copies.length > 1 && (
+            <Tooltip title='このコピー設定を削除する'>
+              <IconButton size='small' onClick={() => removeCopies(i)}>
+                <DeleteIcon fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          )}
+        </div>
+      ))}
+    </div>
+    <div>
+      <h3>コピー元のレコードの選択時に表示するフィールド</h3>
+      {condition.sees.map((field, i) => (
+        <div key={i} className='row'>
+          <AppFieldsInput
+            label='表示するフィールド'
+            value={field}
+            onChange={(e) => onDisplayFieldChange(i, e.target.value)}
+          />
+
+          <Tooltip title='表示フィールドを追加する'>
+            <IconButton size='small' onClick={() => addSees(i)}>
+              <AddIcon fontSize='small' />
+            </IconButton>
+          </Tooltip>
+          {condition.sees.length > 1 && (
+            <Tooltip title='この表示フィールドを削除する'>
+              <IconButton size='small' onClick={() => removeSees(i)}>
+                <DeleteIcon fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
 );
 
 const StyledComponent = styled(Component)`
@@ -181,197 +174,130 @@ const Container: VFC<ContainerProps> = ({ condition, index }) => {
   console.log('form.tsx', { fields });
 
   const onTargetChange = (value: string) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      newCondition[index] = { ...newCondition[index], target: value };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        draft.conditions[index].target = value;
+      })
+    );
   };
 
   const onRelatedChange = (value: string) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      newCondition[index] = { ...newCondition[index], related: value };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        draft.conditions[index].related = value;
+      })
+    );
   };
 
   const onCopyFromChange = (rowIndex: number, value: string) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      const newCopies = [...newCondition[index].copies];
-
-      newCopies[rowIndex] = { ...newCopies[rowIndex], from: value };
-
-      newCondition[index] = {
-        ...newCondition[index],
-        copies: newCopies,
-      };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        const { copies } = draft.conditions[index];
+        copies[rowIndex].from = value;
+      })
+    );
   };
 
   const onCopyToChange = (rowIndex: number, value: string) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      const newCopies = [...newCondition[index].copies];
-
-      newCopies[rowIndex] = { ...newCopies[rowIndex], to: value };
-
-      newCondition[index] = {
-        ...newCondition[index],
-        copies: newCopies,
-      };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        const { copies } = draft.conditions[index];
+        copies[rowIndex].to = value;
+      })
+    );
   };
 
   const onDisplayFieldChange = (rowIndex: number, value: string) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      const newSees = [...newCondition[index].sees];
-
-      newSees[rowIndex] = value;
-
-      newCondition[index] = {
-        ...newCondition[index],
-        sees: newSees,
-      };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        const { sees } = draft.conditions[index];
+        sees[rowIndex] = value;
+      })
+    );
   };
 
   const addCopies = (rowIndex: number) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      const newCopies = [...newCondition[index].copies];
-
-      newCopies.splice(rowIndex + 1, 0, { from: '', to: '' });
-
-      newCondition[index] = {
-        ...newCondition[index],
-        copies: newCopies,
-      };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        const { copies } = draft.conditions[index];
+        copies.splice(rowIndex + 1, 0, { from: '', to: '' });
+      })
+    );
   };
 
   const removeCopies = (rowIndex: number) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      const newCopies = [...newCondition[index].copies];
-
-      newCopies.splice(rowIndex, 1);
-
-      newCondition[index] = {
-        ...newCondition[index],
-        copies: newCopies,
-      };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        const { copies } = draft.conditions[index];
+        copies.splice(rowIndex, 1);
+      })
+    );
   };
 
   const addSees = (rowIndex: number) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      const newSees = [...newCondition[index].sees];
-
-      newSees.splice(rowIndex + 1, 0, '');
-
-      newCondition[index] = {
-        ...newCondition[index],
-        sees: newSees,
-      };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        const { sees } = draft.conditions[index];
+        sees.splice(rowIndex + 1, 0, '');
+      })
+    );
   };
 
   const removeSees = (rowIndex: number) => {
-    setStorage((_storage) => {
-      if (!_storage) {
-        return _storage;
-      }
-
-      const newCondition = [..._storage.conditions];
-
-      const newSees = [...newCondition[index].sees];
-
-      newSees.splice(rowIndex, 1);
-
-      newCondition[index] = {
-        ...newCondition[index],
-        sees: newSees,
-      };
-
-      return { ..._storage, conditions: newCondition };
-    });
+    setStorage((_storage) =>
+      produce(_storage, (draft) => {
+        if (!draft) {
+          return;
+        }
+        const { sees } = draft.conditions[index];
+        sees.splice(rowIndex, 1);
+      })
+    );
   };
 
   return (
-    <StyledComponent
-      {...{
-        condition,
-        index,
-        fields,
-        onTargetChange,
-        onRelatedChange,
-        onCopyFromChange,
-        onCopyToChange,
-        addCopies,
-        removeCopies,
-        onDisplayFieldChange,
-        addSees,
-        removeSees,
-      }}
-    />
+    <>
+      {!fields && <CircularProgress />}
+      <StyledComponent
+        {...{
+          condition,
+          index,
+          onTargetChange,
+          onRelatedChange,
+          onCopyFromChange,
+          onCopyToChange,
+          addCopies,
+          removeCopies,
+          onDisplayFieldChange,
+          addSees,
+          removeSees,
+        }}
+      />
+    </>
   );
 };
 
