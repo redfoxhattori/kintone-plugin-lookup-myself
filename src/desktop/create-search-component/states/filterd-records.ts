@@ -12,8 +12,10 @@ const state = selector<any[]>({
       return records;
     }
 
-    const targets = records.filter((record) =>
-      condition?.sees.some((code) => record[code].value && ~record[code].value.indexOf(input))
+    const targets = records.filter(
+      (record) =>
+        (condition?.related && ~record[condition.related].value.indexOf(input)) ||
+        condition?.sees.some((code) => record[code].value && ~record[code].value.indexOf(input))
     );
 
     return targets;
