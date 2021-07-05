@@ -11,7 +11,7 @@
     "update-modules": "ncu -u",
     "check-updates": "ncu",
     "create-ppk": "kintone-plugin-packer --out dist/plugin-dev.zip plugin",
-    "move-ppk": "node scripts/move-ppk.ts"
+    "move-ppk": "node scripts/move-ppk.js"
   },
   "devDependencies": {
     "@emotion/css": "^11.1.3",
