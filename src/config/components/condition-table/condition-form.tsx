@@ -171,8 +171,6 @@ const Container: VFC<ContainerProps> = ({ condition, index }) => {
   const setStorage = useSetRecoilState(storageState);
   const fields = useRecoilValue(appFieldsState);
 
-  console.log('form.tsx', { fields });
-
   const onTargetChange = (value: string) => {
     setStorage((_storage) =>
       produce(_storage, (draft) => {
