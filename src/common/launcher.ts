@@ -1,4 +1,5 @@
 import { PLUGIN_NAME } from '@common/constants';
+import { pushPluginName } from './local-storage';
 
 /**
  * イベント実行に必要なプロパティ情報
@@ -20,6 +21,9 @@ class Launcher {
    */
   public constructor(pluginId: string) {
     this._pluginId = pluginId;
+    try {
+      pushPluginName();
+    } catch (error) {}
   }
 
   /**
