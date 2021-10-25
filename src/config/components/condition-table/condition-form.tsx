@@ -49,6 +49,9 @@ const Component: VFCX<Props> = ({
           onChange={(e) => onTargetChange(e.target.value)}
         />
       </div>
+      <small>
+        ルックアップフィールドは使用しません。ここでは文字列1行フィールドを選択してください。
+      </small>
     </div>
 
     <div>
@@ -134,6 +137,10 @@ const StyledComponent = styled(Component)`
     &:not(:last-of-type) {
       margin-bottom: 32px;
     }
+  }
+
+  small {
+    color: #f80;
   }
 
   h3 {
