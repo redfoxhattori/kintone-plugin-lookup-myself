@@ -1,38 +1,49 @@
-export const isMobile = (eventType?: string) => {
+import { Record as KintoneRecord } from '@kintone/rest-api-client/lib/client/types';
+import { Cybozu } from '../types/cybozu';
+
+declare const cybozu: Cybozu;
+
+/** 実行されている環境がモバイル端末である場合はTrueを返却します */
+export const isMobile = (eventType?: string): boolean => {
   if (eventType) {
     return eventType.includes('mobile.');
   }
   return cybozu?.data?.IS_MOBILE_DEVICE ?? !kintone.app.getId();
 };
 
+/** モバイル対応 ```kintone.app()``` */
 export const getApp = (eventType?: string): typeof kintone.mobile.app | typeof kintone.app =>
   isMobile(eventType) ? kintone.mobile.app : kintone.app;
 
-export const getAppId = () => getApp().getId();
-export const getRecordId = () => getApp().record.getId();
-export const getQuery = () => getApp().getQuery();
-export const getQueryCondition = () => getApp().getQueryCondition();
+/** モバイル対応 ```kintone.app.getId()``` */
+export const getAppId = (): number | null => getApp().getId();
 
-export const getCurrentRecord = () => getApp().record.get();
-export const setCurrentRecord = (record: { record: any }) => getApp().record.set(record);
+/** モバイル対応 ```kintone.app.record.getId()``` */
+export const getRecordId = (): number | null => getApp().record.getId();
 
-export const setFieldShown = <T = any>(code: keyof T, visible: boolean) =>
+/** モバイル対応 ```kintone.app.record.getSpaceElement()``` */
+export const getSpaceElement = (spaceId: string): HTMLElement | null =>
+  getApp().record.getSpaceElement(spaceId);
+
+/** モバイル対応 ```kintone.app.getQuery()``` */
+export const getQuery = (): string | null => getApp().getQuery();
+
+/** モバイル対応 ```kintone.app.getQueryCondition()``` */
+export const getQueryCondition = (): string | null => getApp().getQueryCondition();
+
+/** モバイル対応 ```kintone.app.record.get()``` */
+export const getCurrentRecord = (): { record: KintoneRecord } => getApp().record.get();
+
+/** モバイル対応 ```kintone.app.record.set()``` */
+export const setCurrentRecord = (record: { record: KintoneRecord }): void =>
+  getApp().record.set(record);
+
+/** モバイル対応 ```kintone.app.record.setFieldShown()``` */
+export const setFieldShown = (code: string, visible: boolean): void =>
   getApp().record.setFieldShown(String(code), visible);
 
-export const getChangeEvents = <T>(
-  events: ('create' | 'edit' | 'index.edit')[],
-  fields: (keyof T)[]
-) =>
-  events.reduce<kintone.EventType[]>(
-    (acc, event) =>
-      [
-        acc,
-        fields.map((field) => `app.record.${event}.change.${field}`),
-      ].flat() as kintone.EventType[],
-    []
-  );
-
-export const getHeaderSpace = (eventType: string) => {
+/** 一覧に応じて、ツールバー部分を優先してヘッダー要素を返します */
+export const getHeaderSpace = (eventType: string): HTMLElement | null => {
   if (isMobile(eventType)) {
     kintone.mobile.app.getHeaderSpaceElement();
   } else if (!~eventType.indexOf('index')) {

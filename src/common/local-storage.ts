@@ -1,4 +1,4 @@
-import { LOCAL_STORAGE_KEY, PLUGIN_NAME } from '@common/constants';
+import { LOCAL_STORAGE_KEY, PLUGIN_NAME } from '@common/statics';
 
 type LocalStorage = Record<string, unknown> & {
   pluginNames: string[];

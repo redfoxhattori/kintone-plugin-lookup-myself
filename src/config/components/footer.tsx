@@ -1,10 +1,10 @@
 import React, { VFC, VFCX } from 'react';
-import { useRecoilCallback, useSetRecoilState } from 'recoil';
+import { useRecoilCallback } from 'recoil';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
-import { Button } from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
-import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
+import { Button } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 
 import { storeStorage } from '@common/plugin';
 
@@ -16,7 +16,7 @@ type Props = {
 };
 
 const Component: VFCX<Props> = ({ className, onSaveButtonClick, onBackButtonClick }) => (
-  <div className={className}>
+  <div {...{ className }}>
     <Button
       variant='contained'
       color='primary'
@@ -27,6 +27,7 @@ const Component: VFCX<Props> = ({ className, onSaveButtonClick, onBackButtonClic
     </Button>
     <Button
       variant='contained'
+      color='inherit'
       onClick={onBackButtonClick}
       startIcon={<SettingsBackupRestoreIcon />}
     >
@@ -49,24 +50,26 @@ const StyledComponent = styled(Component)`
 
 const Container: VFC = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const setStorage = useSetRecoilState(storageState);
+
+  const onBackButtonClick = () => history.back();
 
   const onSaveButtonClick = useRecoilCallback(
     ({ snapshot }) =>
       async () => {
         const storage = await snapshot.getPromise(storageState);
-        if (!storage) {
-          enqueueSnackbar('プラグイン情報が取得できませんでした', { variant: 'error' });
-          return;
-        }
 
-        storeStorage(storage, () => true);
-        enqueueSnackbar('設定を保存しました', { variant: 'success' });
+        storeStorage(storage!, () => true);
+        enqueueSnackbar('設定を保存しました', {
+          variant: 'success',
+          action: (
+            <Button color='inherit' onClick={onBackButtonClick}>
+              プラグイン一覧に戻る
+            </Button>
+          ),
+        });
       },
     []
   );
-
-  const onBackButtonClick = () => history.back();
 
   return <StyledComponent {...{ onSaveButtonClick, onBackButtonClick }} />;
 };

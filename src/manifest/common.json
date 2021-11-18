@@ -1,0 +1,34 @@
+{
+  "manifest_version": 1,
+  "version": 8,
+  "type": "APP",
+  "name": {
+    "en": "Lookup myself",
+    "ja": "自アプリルックアッププラグイン",
+    "zh": "插件模板"
+  },
+  "description": {
+    "en": "kintone-plugin-search",
+    "ja": "アプリの文字列フィールドをルックアップフィールドに見立て、同一アプリの別レコードから情報を参照できるようにします。",
+    "zh": "插件模板"
+  },
+  "icon": "image/icon.png",
+  "homepage_url": {
+    "ja": "https://ribbit.work/",
+    "en": "https://ribbit.work/"
+  },
+  "desktop": {
+    "js": ["https://cdn.jsdelivr.net/gh/local-bias/kintone-cdn@latest/dist/desktop.js"],
+    "css": []
+  },
+  "mobile": {
+    "js": ["https://cdn.jsdelivr.net/gh/local-bias/kintone-cdn@latest/dist/desktop.js"],
+    "css": []
+  },
+  "config": {
+    "html": "html/config.html",
+    "js": ["https://cdn.jsdelivr.net/gh/local-bias/kintone-cdn@latest/dist/config.js"],
+    "css": [],
+    "required_params": []
+  }
+}
