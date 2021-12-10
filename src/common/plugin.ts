@@ -55,5 +55,6 @@ export const getNewCondition = (): kintone.plugin.Condition => ({
   copies: [{ from: '', to: '' }],
   sees: [''],
   enablesCache: true,
+  enablesValidation: false,
   autoLookup: true,
 });

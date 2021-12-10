@@ -25,6 +25,7 @@ type Props = ContainerProps & {
   addDisplayingField: (rowIndex: number) => void;
   removeDisplayingField: (rowIndex: number) => void;
   onEnableCacheChange: (checked: boolean) => void;
+  onValidationCheckChange: (checked: boolean) => void;
   onAutoLookupChange: (checked: boolean) => void;
 };
 
@@ -42,6 +43,7 @@ const Component: VFCX<Props> = ({
   addDisplayingField,
   removeDisplayingField,
   onEnableCacheChange,
+  onValidationCheckChange,
   onAutoLookupChange,
 }) => (
   <div {...{ className }}>
@@ -149,6 +151,11 @@ const Component: VFCX<Props> = ({
         onChange={(_, checked) => onAutoLookupChange(checked)}
         label='コピー先に標準のルックアップフィールドが存在する場合、取得完了後自動的にルックアップを実行する。'
       />
+      <FormControlLabel
+        control={<Switch color='primary' checked={condition.enablesValidation} />}
+        onChange={(_, checked) => onValidationCheckChange(checked)}
+        label='レコード保存時に、入力値を検証する。'
+      />
     </div>
   </div>
 );
@@ -162,6 +169,8 @@ const StyledComponent = styled(Component)`
   > div {
     padding: 8px 8px 8px 16px;
     border-left: 2px solid #0002;
+    display: flex;
+    flex-direction: column;
   }
 
   .input {
@@ -307,6 +316,8 @@ const Container: VFC<ContainerProps> = ({ condition, index }) => {
   };
 
   const onEnableCacheChange = (checked: boolean) => onSwitchChange(checked, 'enablesCache');
+  const onValidationCheckChange = (checked: boolean) =>
+    onSwitchChange(checked, 'enablesValidation');
   const onAutoLookupChange = (checked: boolean) => onSwitchChange(checked, 'autoLookup');
 
   return (
@@ -325,6 +336,7 @@ const Container: VFC<ContainerProps> = ({ condition, index }) => {
         addDisplayingField,
         removeDisplayingField,
         onEnableCacheChange,
+        onValidationCheckChange,
         onAutoLookupChange,
       }}
     />
